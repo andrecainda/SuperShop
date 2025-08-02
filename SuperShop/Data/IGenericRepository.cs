@@ -1,11 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SuperShop.Data
 {
     public interface IGenericRepository<T > where T : class
     {
-        IQueryable<T> GetAll();
+        //IQueryable<T> GetAll();
+
+        //ajuste para possibilitar a ordenação
+        IQueryable<T> GetAll(Expression<Func<T, object>> orderBy, bool ascending = true);
 
         Task<T> GetByIdAsync(int id);
 

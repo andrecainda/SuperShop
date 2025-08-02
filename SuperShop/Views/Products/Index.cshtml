@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<SuperShop.Data.Entity.Product>
+@using SuperShop.Controllers
 
 @{
     ViewData["Title"] = "Index";
@@ -13,59 +14,68 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                <a asp-action="Index"
+                   asp-route-sortField="@ProductsController.SortField.Name"
+                   asp-route-ascending="@((ViewData["SortField"] as ProductsController.SortField? == ProductsController.SortField.Name && !(bool)ViewData["Ascending"]) ? true : false)">
+                    @Html.DisplayNameFor(model => model.Name) @GetSortIcon(ProductsController.SortField.Name)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                <a asp-action="Index"
+                   asp-route-sortField="@ProductsController.SortField.Price"
+                   asp-route-ascending="@((ViewData["SortField"] as ProductsController.SortField? == ProductsController.SortField.Price && !(bool)ViewData["Ascending"]) ? true : false)">
+                    @Html.DisplayNameFor(model => model.Price) @GetSortIcon(ProductsController.SortField.Price)
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.imageUrl)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastPurchase)
+                <a asp-action="Index"
+                   asp-route-sortField="@ProductsController.SortField.Stock"
+                   asp-route-ascending="@((ViewData["SortField"] as ProductsController.SortField? == ProductsController.SortField.Stock && !(bool)ViewData["Ascending"]) ? true : false)">
+                    @Html.DisplayNameFor(model => model.Stock) @GetSortIcon(ProductsController.SortField.Stock)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastSale)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsAvailable)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stock)
+                <a asp-action="Index"
+                   asp-route-sortField="@ProductsController.SortField.Availability"
+                   asp-route-ascending="@((ViewData["SortField"] as ProductsController.SortField? == ProductsController.SortField.Availability && !(bool)ViewData["Ascending"]) ? true : false)">
+                    @Html.DisplayNameFor(model => model.IsAvailable) @GetSortIcon(ProductsController.SortField.Availability)
+                </a>
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.imageUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastPurchase)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastSale)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsAvailable)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Stock)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                <td>@Html.DisplayFor(modelItem => item.imageUrl)</td>
+                <td>@Html.DisplayFor(modelItem => item.Stock)</td>
+                <td>@Html.DisplayFor(modelItem => item.IsAvailable)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@functions {
+    string GetSortIcon(ProductsController.SortField field)
+    {
+        var currentField = ViewData["SortField"] as ProductsController.SortField?;
+        var ascending = ViewData["Ascending"] as bool? ?? true;
+
+        if (currentField == field)
+        {
+            return ascending ? "↑" : "↓";
+        }
+        return "";
+    }
+}

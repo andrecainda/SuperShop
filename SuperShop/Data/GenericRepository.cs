@@ -1,31 +1,31 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using System;
-using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
+﻿using Microsoft.EntityFrameworkCore;
 using SuperShop.Data.Entities;
-
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace SuperShop.Data
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class, IEntity
     {
         private readonly DataContext _context;
-        public GenericRepository(DataContext context) 
+        public GenericRepository(DataContext context)
         {
-           _context = context;
+            _context = context;
         }
-        public IQueryable<T> GetAll()
+
+        public IQueryable<T> GetAll(Expression<Func<T, object>> orderBy, bool ascending = true)
         {
-            return _context.Set<T>().AsNoTracking();
-            
+            var query = _context.Set<T>().AsNoTracking();
+            return ascending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
         }
-        
+
         public async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(equals => equals.Id == id);
+                .FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task CreateAsync(T entity)
@@ -48,13 +48,12 @@ namespace SuperShop.Data
 
         public async Task<bool> ExistAsync(int id)
         {
-           return await _context.Set<T>().AnyAsync(e => e.Id == id);
+            return await _context.Set<T>().AnyAsync(e => e.Id == id);
         }
 
         private async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0;
         }
-
     }
 }

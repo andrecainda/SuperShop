@@ -1,6 +1,7 @@
 ﻿using SuperShop.Data.Entities;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SuperShop.Data.Entity
 {
@@ -14,6 +15,7 @@ namespace SuperShop.Data.Entity
 
 
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
+        [Column(TypeName = "decimal(18,2)")]  // <-- esta linha aqui
         public decimal Price { get; set; }
 
 
@@ -33,5 +35,9 @@ namespace SuperShop.Data.Entity
 
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
         public double Stock {  get; set; }
+
+        public User User { get; set; }
+
+       
     }
 }

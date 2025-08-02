@@ -15,10 +15,12 @@ namespace SuperShop.Data
             _context = context;
         }
 
-        public IQueryable<T> GetAll(Expression<Func<T, object>> orderBy, bool ascending = true)
+        public IQueryable<T> GetAll(Expression<Func<T, object>>? orderBy=null, bool ascending = true)
         {
             var query = _context.Set<T>().AsNoTracking();
             return ascending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
+
+            //return _context.Set<T>().AsNoTrackink()
         }
 
         public async Task<T> GetByIdAsync(int id)

@@ -10,7 +10,7 @@ namespace SuperShop.Data
         //IQueryable<T> GetAll();
 
         //ajuste para possibilitar a ordenação
-        IQueryable<T> GetAll(Expression<Func<T, object>> orderBy, bool ascending = true);
+        IQueryable<T> GetAll(Expression<Func<T, object>>? orderBy=null, bool ascending = true);
 
         Task<T> GetByIdAsync(int id);
 

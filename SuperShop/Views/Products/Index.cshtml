@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<SuperShop.Data.Entity.Product>
-@using SuperShop.Controllers
+@using SuperShop.Controllers;
+
 
 @{
     ViewData["Title"] = "Index";
@@ -26,10 +27,7 @@
                    asp-route-ascending="@((ViewData["SortField"] as ProductsController.SortField? == ProductsController.SortField.Price && !(bool)ViewData["Ascending"]) ? true : false)">
                     @Html.DisplayNameFor(model => model.Price) @GetSortIcon(ProductsController.SortField.Price)
                 </a>
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.imageUrl)
-            </th>
+            </th>   
             <th>
                 <a asp-action="Index"
                    asp-route-sortField="@ProductsController.SortField.Stock"
@@ -53,8 +51,15 @@
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Name)</td>
                 <td>@Html.DisplayFor(modelItem => item.Price)</td>
-                <td>@Html.DisplayFor(modelItem => item.imageUrl)</td>
+
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:100px;height:150px;max-width:100%;height:auto">
+                    }
+                </td>
                 <td>@Html.DisplayFor(modelItem => item.Stock)</td>
+
                 <td>@Html.DisplayFor(modelItem => item.IsAvailable)</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |

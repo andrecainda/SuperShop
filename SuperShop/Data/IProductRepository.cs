@@ -1,8 +1,11 @@
-﻿using SuperShop.Data.Entity;
+﻿using System.Linq;
+using SuperShop.Data.Entity;
+
 
 namespace SuperShop.Data
 {
     public interface IProductRepository : IGenericRepository<Product>
     {
+        public IQueryable GetAllWithUsers();
     }
 }

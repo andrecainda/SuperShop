@@ -20,7 +20,7 @@ namespace SuperShop.Data.Entity
 
 
         [Display(Name = "Image")]
-        public string imageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
         [Display(Name = "Last Purchase")]
         public DateTime? LastPurchase {  get; set; }
@@ -37,6 +37,20 @@ namespace SuperShop.Data.Entity
         public double Stock {  get; set; }
 
         public User User { get; set; }
+
+
+        public string ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ImageUrl))
+                {
+                    return null;
+                }
+                return $"https://localhost:44311{ImageUrl.Substring(1)}";
+            }
+            
+        }
 
        
     }

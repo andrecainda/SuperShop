@@ -17,22 +17,25 @@ namespace SuperShop.Controllers
 {
     public class ProductsController : Controller
     {
-        public enum SortField
-        {
-            Name,
-            Price,
-            Stock,
-            Availability
-        }
+        
 
         private readonly IProductRepository _productrepository;
         private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
+
 
         public ProductsController(
-            IProductRepository productrepository, IUserHelper userHelper)
+            IProductRepository productrepository, 
+            IUserHelper userHelper,
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper
+            )
         {
-           _productrepository = productrepository;
+            _productrepository = productrepository;
             _userHelper = userHelper;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
         }
 
         // GET: Products
@@ -43,23 +46,9 @@ namespace SuperShop.Controllers
         }
         */
 
-        public IActionResult Index(SortField sortField = SortField.Name, bool ascending = true)
+        public IActionResult Index()
         {
-            Expression<Func<Product, object>> orderBy = sortField switch
-            {
-                SortField.Name => p => p.Name,
-                SortField.Price => p => p.Price,
-                SortField.Stock => p => p.Stock,
-                SortField.Availability => p => p.IsAvailable,
-                _ => p => p.Name
-            };
-
-            var products = _productrepository.GetAll(orderBy, ascending).ToList();
-
-            ViewData["SortField"] = sortField;
-            ViewData["Ascending"] = ascending;
-
-            return View(products);
+             return View(_productrepository.GetAll().OrderBy(p => p.Name));
         }
 
 
@@ -98,26 +87,17 @@ namespace SuperShop.Controllers
             {
 
                 var path = string.Empty;
+
                 if(model.ImageFile != null && model.ImageFile.Length > 0)
                 {
-                    var guid = Guid.NewGuid().ToString();
-                    var file = $"{guid}.jpg";
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "products");
 
-
-                    path = Path.Combine(
-                        Directory.GetCurrentDirectory(), 
-                        "wwwroot\\images\\products",
-                        file);
-
-                    using (var stream = new FileStream(path, FileMode.Create)) 
-                    {
-                        await model.ImageFile.CopyToAsync(stream);
-                    } 
-
-                    path = $"~/images/products/{file}";
+          
                 }
 
-                var product = this.ToProduct(model, path);
+                //var product = this.ToProduct(model, path);
+
+                var product = _converterHelper.ToProduct(model, path, true);
 
 
 
@@ -129,21 +109,7 @@ namespace SuperShop.Controllers
             return View(model);
         }
 
-        private Product ToProduct(ProductViewModel model, string path)
-        {
-            return new Product
-            {
-                Id = model.Id,
-                ImageUrl = path,//ImageUrl
-                IsAvailable = model.IsAvailable,
-                LastPurchase = model.LastPurchase,
-                LastSale = model.LastSale,
-                Name = model.Name,
-                Price = model.Price,
-                Stock = model.Stock,
-                User = model.User
-            };
-        }
+       
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -158,25 +124,12 @@ namespace SuperShop.Controllers
             {
                 return NotFound();
             }
-            var model = this.ToProductViewModel(product);
+            //var model = this.ToProductViewModel(product);
+            var model = _converterHelper.ToProductViewModel(product);
             return View(model);
         }
 
-        private ProductViewModel ToProductViewModel(Product product)
-        {
-            return new ProductViewModel
-            {
-                Id = product.Id,
-                IsAvailable = product.IsAvailable,
-                LastPurchase = product.LastPurchase,
-                LastSale = product.LastSale,
-                ImageUrl = product.ImageUrl,
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock,
-                User = product.User
-            };
-        }
+       
 
         // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -196,25 +149,11 @@ namespace SuperShop.Controllers
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
-
-                        var guid = Guid.NewGuid().ToString();
-                        var file = $"{guid}.jpg";
-
-                        path = Path.Combine(
-                            Directory.GetCurrentDirectory(),
-                            "wwwroot\\images\\products",
-                            file);
-
-                        using (var stream = new FileStream(path, FileMode.Create))
-                        {
-                            await model.ImageFile.CopyToAsync(stream);
-                        }
-
-                        path = $"~/images/products/{file}";
-
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "products");
                     }
 
-                    var product = this.ToProduct(model, path);
+                   // var product = this.ToProduct(model, path);
+                    var product = _converterHelper.ToProduct(model, path, false);
 
                     //TODO: Modificar para o user que tiver logado
                     product.User = await _userHelper.GetUserByEmailAsync("andretchipalavela@gmail.com");

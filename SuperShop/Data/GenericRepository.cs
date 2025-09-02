@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SuperShop.Data.Entities;
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using SuperShop.Data.Entities;
 
 namespace SuperShop.Data
 {
@@ -15,6 +15,11 @@ namespace SuperShop.Data
             _context = context;
         }
 
+        public IQueryable<T> GetAll()
+        {
+            return _context.Set<T>().AsNoTracking();
+        }
+        /*
         public IQueryable<T> GetAll(Expression<Func<T, object>>? orderBy=null, bool ascending = true)
         {
             var query = _context.Set<T>().AsNoTracking();
@@ -22,7 +27,7 @@ namespace SuperShop.Data
 
             //return _context.Set<T>().AsNoTrackink()
         }
-
+        */
         public async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>()

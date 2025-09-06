@@ -12,7 +12,7 @@ namespace SuperShop.Helpers
             return new Product
             {
                 Id = isNew ? 0 : model.Id,
-                ImageUrl = path,//ImageUrl
+                ImageId = path,//ImageUrl
                 IsAvailable = model.IsAvailable,
                 LastPurchase = model.LastPurchase,
                 LastSale = model.LastSale,
@@ -34,7 +34,7 @@ namespace SuperShop.Helpers
                 IsAvailable = product.IsAvailable,
                 LastPurchase = product.LastPurchase,
                 LastSale = product.LastSale,
-                ImageUrl = product.ImageUrl,
+                ImageId = product.ImageId,
                 Name = product.Name,
                 Price = product.Price,
                 Stock = product.Stock,

@@ -20,13 +20,13 @@ namespace SuperShop.Data.Entity
 
 
         [Display(Name = "Image")]
-        public string ImageUrl { get; set; }
+        public string ImageId { get; set; }
 
         [Display(Name = "Last Purchase")]
         public DateTime? LastPurchase {  get; set; }
 
 
-        [Display(Name = "Last")]
+        [Display(Name = "Last Sale")]
         public DateTime? LastSale { get; set; }
 
 
@@ -43,11 +43,11 @@ namespace SuperShop.Data.Entity
         {
             get
             {
-                if (string.IsNullOrEmpty(ImageUrl))
+                if (string.IsNullOrEmpty(ImageId))
                 {
                     return null;
                 }
-                return $"https://localhost:44311{ImageUrl.Substring(1)}";
+                return $"https://localhost:44311{ImageId.Substring(1)}";
             }
             
         }

@@ -145,7 +145,7 @@ namespace SuperShop.Controllers
                 try
                 {
 
-                    var path = model.ImageUrl;
+                    var path = model.ImageId;
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {

@@ -129,7 +129,6 @@ namespace SuperShop.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-
                 if (user != null)
                 {
                     user.FirstName = model.FirstName;

@@ -12,19 +12,19 @@ using SuperShop.Models;
 
 
 namespace SuperShop.Controllers
-{  
+{
     public class AccountController : Controller
     {
         private readonly IUserHelper _userHelper;
 
         public AccountController(IUserHelper userHelper)
         {
-          _userHelper = userHelper;
+            _userHelper = userHelper;
         }
 
-        public IActionResult Login() 
+        public IActionResult Login()
         {
-            if (User.Identity.IsAuthenticated) 
+            if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -56,7 +56,7 @@ namespace SuperShop.Controllers
 
         public async Task<IActionResult> Logout()
         {
-           await _userHelper.LogoutAsync();
+            await _userHelper.LogoutAsync();
             return RedirectToAction("Index", "Home");
         }
 
@@ -71,7 +71,7 @@ namespace SuperShop.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByEmailAsync(model.Username);
-                if (user == null) 
+                if (user == null)
                 {
                     user = new User
                     {
@@ -82,7 +82,7 @@ namespace SuperShop.Controllers
                     };
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
-                    if(result != IdentityResult.Success)
+                    if (result != IdentityResult.Success)
                     {
                         ModelState.AddModelError(string.Empty, "The User couldn't be created.");
                         return View(model);
@@ -96,13 +96,13 @@ namespace SuperShop.Controllers
                     };
 
                     var result2 = await _userHelper.LoginAsync(loginViewModel);
-                    if (result2.Succeeded) 
+                    if (result2.Succeeded)
                     {
                         return RedirectToAction("Index", "Home");
                     }
 
                     ModelState.AddModelError(string.Empty, "The user couldn't be logged. ");
-                   
+
                 }
 
             }
@@ -110,5 +110,82 @@ namespace SuperShop.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> ChangeUser()
+        {
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+            var model = new ChangeUserViewModel();
+            if (user != null)
+            {
+                model.FirstName = user.FirstName;
+                model.LastName = user.LastName;
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeUser(ChangeUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+                if (user != null)
+                {
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    var response = await _userHelper.UpdateUserdAsync(user);
+                    if (response.Succeeded)
+                    {
+                        ViewBag.UserMessage = "User updated";
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, response.Errors.FirstOrDefault().Description);
+                    }
+                }
+            }
+
+
+
+            return View(model);
+        }
+
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                if (user != null)
+                {
+
+                    var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        return this.RedirectToAction("ChangeUser");
+                    }
+                    else
+                    {
+                        this.ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault().Description);
+                    }
+
+                }
+                else
+                {
+                    this.ModelState.AddModelError(string.Empty, "User not found.");
+                }
+
+
+            }
+            return this.View(model);
+        }
+
     }
+
 }

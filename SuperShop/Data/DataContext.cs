@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SuperShop.Data.Entities;
 using SuperShop.Data.Entity;
+using System.Linq;
 
 
 namespace SuperShop.Data
@@ -21,22 +22,22 @@ namespace SuperShop.Data
         }
 
         
-
-
-
-
-        
-        /*
+        /* Habilitar a regra de apagar em cascata (Cascade Delete Rule)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Product>()
-                .Property(p => p.Price)
-                .HasColumnType("decimal(18,2)");
+            var cascadeFKs = modelBuilder.Model
+                  .GetEntityTypes()
+                  .SelectMany(t => t.GetForeignKeys())
+                  .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
 
+            foreach(var fk in cascadeFKs)
+            {
+                fk.DeleteBehavior = DeleteBehavior.Cascade;
+            }
+
+            base.OnModelCreating(modelBuilder);
+        
         }
-        */
-    
-       
+       */
     }
 }

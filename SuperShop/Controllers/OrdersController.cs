@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuperShop.Data;
@@ -30,7 +31,7 @@ namespace SuperShop.Controllers
             return View(model);
         }
 
-        
+
         public IActionResult AddProduct()
         {
             var model = new AddItemViewModel
@@ -47,23 +48,24 @@ namespace SuperShop.Controllers
         {
             if (ModelState.IsValid)
             {
-               await _orderRepository.AddItemToOrderAsync(model, this.User.Identity.Name);
+                await _orderRepository.AddItemToOrderAsync(model, this.User.Identity.Name);
                 return RedirectToAction("Create");
-            };
+            }
+            ;
 
             return View(model);
         }
 
         public async Task<IActionResult> DeleteItem(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return NotFound();
 
             }
 
             await _orderRepository.DeleteDetailTempAsync(id.Value);
-            return RedirectToAction("Create"); 
+            return RedirectToAction("Create");
         }
 
         public async Task<IActionResult> Increase(int? id)
@@ -94,12 +96,43 @@ namespace SuperShop.Controllers
         {
 
             var response = await _orderRepository.ConfirmOrderAsync(this.User.Identity.Name);
-            if( response)
+            if (response)
             {
                 return RedirectToAction("Index");
             }
 
             return RedirectToAction("Create");
+        }
+
+        public async Task<IActionResult> Deliver(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var order = await _orderRepository.GetByIdAsync(id.Value);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var model = new DeliveryViewModel
+            {
+                Id = order.Id,
+                DeliveryDate = DateTime.Today
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Deliver(DeliveryViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                await _orderRepository.DeliveryOrder(model);
+                return RedirectToAction("Index");
+            }
+                 return View();
         }
     }
 }

@@ -74,7 +74,7 @@ namespace SuperShop.Controllers
         }
 
         // GET: Products/Create
-        [Authorize(Roles = "Admin")]
+        
         public IActionResult Create()
         {
             return View();
@@ -203,6 +203,7 @@ namespace SuperShop.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _productrepository.GetByIdAsync(id);
